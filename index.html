@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KAMEHA · Google Review Page</title>
+
+  <style>
+    :root{
+      --red:#991b1b;
+      --red-dark:#7f1d1d;
+      --bg:#ffffff;
+    }
+
+    body{
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background: var(--bg);
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 0 16px 32px;
+      text-align: center;
+      color:#111;
+    }
+
+    .banner{
+      width:100%;
+      background:#ffffff;
+      padding:26px 0 22px;
+      margin-bottom:22px;
+      border-bottom:3px solid var(--red);
+      border-radius:0 0 18px 18px;
+    }
+
+    .banner img{
+      max-width:300px;
+      width:90%;
+      height:auto;
+      display:inline-block;
+    }
+
+    h1{
+      color: var(--red);
+      margin: 8px 0 6px;
+      font-size:26px;
+    }
+
+    p{
+      color:#555;
+      margin: 0 0 18px;
+      font-size:14px;
+    }
+
+    textarea{
+      width:100%;
+      min-height:120px;
+      padding:14px;
+      border-radius:14px;
+      border:1px solid #ddd;
+      font-size:15px;
+      box-sizing:border-box;
+    }
+
+    button{
+      width:100%;
+      padding:16px;
+      margin-top:12px;
+      font-size:16px;
+      border-radius:16px;
+      border:none;
+      cursor:pointer;
+    }
+
+    .primary{
+      background: var(--red);
+      color:#fff;
+    }
+
+    .primary:hover{
+      background: var(--red-dark);
+    }
+
+    .hint{
+      margin-top:16px;
+      font-size:13px;
+      color:#666;
+      line-height:1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Logo -->
+  <div class="banner">
+    <img src="kameha-logo.jpeg" alt="KAMEHA Logo">
+  </div>
+
+  <h1>KAMEHA AV Solutions</h1>
+  <p>Generate a review · Copy & paste to Google</p>
+
+  <textarea id="reviewText" placeholder="Click “Generate Review”"></textarea>
+
+  <button class="primary" id="btnGen">Generate Review</button>
+  <button class="primary" id="btnGo">Copy & Open Google Reviews</button>
+
+  <div class="hint">
+    Step 1: Tap ⭐⭐⭐⭐⭐ on Google Maps<br>
+    Step 2: Paste your review<br>
+    Step 3: Tap Post
+  </div>
+
+  <script>
+    const GOOGLE_MAPS_URL = "https://maps.app.goo.gl/ebuPunTz2Cv2H5jw6";
+
+    const reviews = [
+      "Professional and reliable AV service.",
+      "Awesome service, very satisfied with the setup.",
+      "Clear explanation and professional service. Easy to understand.",
+      "Good experience with their technical team. Communication was clear and professional.",
+      "The AV system was installed properly and tested before handover."
+    ];
+
+    const reviewEl = document.getElementById("reviewText");
+    const btnGen = document.getElementById("btnGen");
+    const btnGo  = document.getElementById("btnGo");
+
+    function generateReview(){
+      const r = reviews[Math.floor(Math.random() * reviews.length)];
+      reviewEl.value = r;
+    }
+
+    async function tryCopy(text){
+      try{
+        await navigator.clipboard.writeText(text);
+        return true;
+      }catch(e){
+        try{
+          reviewEl.focus();
+          reviewEl.select();
+          reviewEl.setSelectionRange(0, text.length);
+          return document.execCommand("copy");
+        }catch(err){
+          return false;
+        }
+      }
+    }
+
+    btnGen.addEventListener("click", generateReview);
+
+    btnGo.addEventListener("click", async () => {
+      const t = reviewEl.value.trim();
+      if(!t){
+        alert("Please generate a review first.");
+        return;
+      }
+
+      const win = window.open(GOOGLE_MAPS_URL, "_blank");
+      const copied = await tryCopy(t);
+
+      if(!win){
+        alert("Popup blocked. Please allow popups and tap again.");
+        return;
+      }
+
+      if(!copied){
+        alert("Copy failed. Please manually copy.");
+      }
+    });
+  </script>
+
+</body>
+</html>

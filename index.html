@@ -101,7 +101,7 @@
   <textarea id="reviewText" placeholder="Click “Generate Review”"></textarea>
 
   <button class="primary" id="btnGen">Generate Review</button>
-  <button class="primary" id="btnGo">Copy & Open Google Reviews</button>
+  <button class="primary" id="btnGo">Copy Review & Open Google</button>
 
   <div class="hint">
     Step 1: Tap ⭐⭐⭐⭐⭐ on Google Maps<br>
@@ -115,7 +115,7 @@
     const reviews = [
       "Excellent service from KAMEHA. The team is professional and knowledgeable in HDMI solutions. Installation was smooth and everything works perfectly. Highly recommended for AV and HDMI system needs in Malaysia.",
       "KAMEHA provided a very reliable HDMI solution for our project. Their team clearly understands HDMI distribution, extender, and matrix systems. Professional support and stable performance.",
-      "Very good experience with KAMEHA. The team explained everything clearly and helped us choose the right HDMI cables and extender. Easy to understand and great support",
+      "Very good experience with KAMEHA. The team explained everything clearly and helped us choose the right HDMI cables and extender. Easy to understand and great support.",
       "High quality HDMI products from KAMEHA. The signal is stable and installation was done properly. Definitely a trusted HDMI brand in Malaysia.",
       "Good service, professional team, and reliable HDMI products. Thank you KAMEHA!"
     ];
@@ -129,41 +129,51 @@
       reviewEl.value = r;
     }
 
-    async function tryCopy(text){
+    async function copyText(text){
+      let success = false;
+
       try{
         await navigator.clipboard.writeText(text);
-        return true;
+        success = true;
       }catch(e){
         try{
           reviewEl.focus();
           reviewEl.select();
           reviewEl.setSelectionRange(0, text.length);
-          return document.execCommand("copy");
+          success = document.execCommand("copy");
         }catch(err){
-          return false;
+          success = false;
         }
       }
+
+      return success;
     }
 
     btnGen.addEventListener("click", generateReview);
 
     btnGo.addEventListener("click", async () => {
       const t = reviewEl.value.trim();
+
       if(!t){
         alert("Please generate a review first.");
         return;
       }
 
-      const win = window.open(GOOGLE_MAPS_URL, "_blank");
-      const copied = await tryCopy(t);
+      const copied = await copyText(t);
 
-      if(!win){
-        alert("Popup blocked. Please allow popups and tap again.");
-        return;
+      const win = window.open(GOOGLE_MAPS_URL, "_blank");
+
+      reviewEl.focus();
+      reviewEl.select();
+
+      if(copied){
+        alert("✅ Review copied! Now paste it on Google.");
+      }else{
+        alert("⚠️ Copy failed. Text is selected — please copy manually.");
       }
 
-      if(!copied){
-        alert("Copy failed. Please manually copy.");
+      if(!win){
+        alert("Popup blocked. Please allow popups.");
       }
     });
   </script>
